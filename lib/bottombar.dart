@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobs/screens/categorypage.dart';
 import 'package:jobs/screens/homepage.dart';
 
 class BottomBar extends StatefulWidget {
