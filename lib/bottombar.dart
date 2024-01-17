@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jobs/screens/categorypage.dart';
+import 'package:jobs/screens/favouritepostpage.dart';
+import 'package:jobs/screens/searchpage.dart';
 import 'package:jobs/screens/homepage.dart';
+import 'package:jobs/screens/settingspage.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
@@ -10,42 +12,63 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  PageController pageController = PageController();
-  List<Widget> views = [
-    HomePage(),
-    CategoryPage(),
-    HomePage(),
-    HomePage(),
-  ];
+  late PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+  }
+
   int index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Voice of usaf'),
-      ),
-      body: PageView(
-        onPageChanged: (int v) {
-          index = v;
-        },
-        children: views,
+      body: SafeArea(
+        child: PageView(
+          controller: pageController,
+          onPageChanged: (int v) {
+            setState(() {
+              index = v;
+            });
+          },
+          children: [
+            HomePage(),
+            SearchPage(),
+            FavouritePostPage(),
+            SettingsPage(),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         selectedItemColor: Colors.purple,
         unselectedItemColor: Colors.blue,
         onTap: (int v) {
-          index = v;
-          pageController.jumpToPage(index);
+          setState(() {
+            index = v;
+            pageController.animateToPage(
+              index,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          });
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'Favourites'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'My App'),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
   }
 }
