@@ -22,6 +22,7 @@ class _FavPageState extends State<FavPage> {
     setState(() {
       fav = favourites;
     });
+    print('length:${fav.length}');
   }
 
   @override
@@ -31,64 +32,75 @@ class _FavPageState extends State<FavPage> {
         title: Text('Favourites'),
         titleSpacing: 0,
       ),
-      body: ListView.separated(
-        itemCount: fav.length,
-        itemBuilder: (_, i) {
-          var post = fav.getAt(i)!.singlePosts;
-          return ListTile(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => SinglePostPage(
-                          title: post.title,
-                          image: post.img,
-                          content: post.content,
-                          category: post.category)));
-            },
-            onLongPress: () {
-              showAdaptiveDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                        content: ListTile(
-                          title: Text('Delete'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            showAdaptiveDialog(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                      title: Text('Are you Sure?'),
-                                      content: Text(
-                                          'Do you really want to delete this item?'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('No')),
-                                        TextButton(
-                                            onPressed: () {
-                                              favourites.deleteAt(i);
-                                              setState(() {
-                                                fav = favourites;
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Yes')),
-                                      ],
-                                    ));
-                          },
-                        ),
-                      ));
-            },
-            title: Text(post.title),
-            leading: CachedNetworkImage(imageUrl: post.img),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider();
-        },
-      ),
+      body: fav.length == 0
+          ? Container(
+              child: Center(
+                child: Text(
+                  'No Posts To Display',
+                  style: TextStyle(fontSize: 20, color: Colors.green),
+                ),
+              ),
+            )
+          : ListView.separated(
+              itemCount: fav.length,
+              itemBuilder: (_, i) {
+                var post = fav.getAt(i)!.singlePosts;
+                return ListTile(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => SinglePostPage(
+                                  title: post.title,
+                                  image: post.img,
+                                  content: post.content,
+                                  category: post.category,
+                                  date: post.date,
+                                )));
+                  },
+                  onLongPress: () {
+                    showAdaptiveDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                              content: ListTile(
+                                title: Text('Delete'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  showAdaptiveDialog(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                            title: Text('Are you Sure?'),
+                                            content: Text(
+                                                'Do you really want to delete this item?'),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text('No')),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    favourites.deleteAt(i);
+                                                    setState(() {
+                                                      fav = favourites;
+                                                    });
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text('Yes')),
+                                            ],
+                                          ));
+                                },
+                              ),
+                            ));
+                  },
+                  title: Text(post.title),
+                  leading: CachedNetworkImage(imageUrl: post.img),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider();
+              },
+            ),
     );
   }
 }

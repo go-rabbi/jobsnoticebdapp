@@ -28,66 +28,78 @@ class _FavouritePostPageState extends State<FavouritePostPage> {
       child: Column(
         children: [
           Image.asset('img/banner.jpg'),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: fav.length,
-            itemBuilder: (_, i) {
-              var post = fav.getAt(i)!.singlePosts;
-              return ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => SinglePostPage(
-                              title: post.title,
-                              image: post.img,
-                              content: post.content,
-                              category: post.category)));
-                },
-                onLongPress: () {
-                  showAdaptiveDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                            content: ListTile(
-                              title: Text('Delete'),
-                              onTap: () {
-                                Navigator.pop(context);
-                                showAdaptiveDialog(
-                                    context: context,
-                                    builder: (_) => AlertDialog(
-                                          title: Text('Are you Sure?'),
-                                          content: Text(
-                                              'Do you really want to delete this item?'),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text('No')),
-                                            TextButton(
-                                                onPressed: () {
-                                                  favourites.deleteAt(i);
-                                                  setState(() {
-                                                    fav = favourites;
-                                                  });
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text('Yes')),
-                                          ],
-                                        ));
-                              },
-                            ),
-                          ));
-                },
-                title: Text(post.title),
-                leading: CachedNetworkImage(imageUrl: post.img),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider();
-            },
-          ),
+          fav.length == 0
+              ? Container(
+                  padding: EdgeInsets.only(top: 250),
+                  child: Center(
+                    child: Text(
+                      'No Posts To Display',
+                      style: TextStyle(fontSize: 20, color: Colors.red),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: fav.length,
+                  itemBuilder: (_, i) {
+                    var post = fav.getAt(i)!.singlePosts;
+                    return ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => SinglePostPage(
+                                      title: post.title,
+                                      image: post.img,
+                                      content: post.content,
+                                      category: post.category,
+                                      date: post.date,
+                                    )));
+                      },
+                      onLongPress: () {
+                        showAdaptiveDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                                  content: ListTile(
+                                    title: Text('Delete'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      showAdaptiveDialog(
+                                          context: context,
+                                          builder: (_) => AlertDialog(
+                                                title: Text('Are you Sure?'),
+                                                content: Text(
+                                                    'Do you really want to delete this item?'),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('No')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        favourites.deleteAt(i);
+                                                        setState(() {
+                                                          fav = favourites;
+                                                        });
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('Yes')),
+                                                ],
+                                              ));
+                                    },
+                                  ),
+                                ));
+                      },
+                      title: Text(post.title),
+                      leading: CachedNetworkImage(imageUrl: post.img),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider();
+                  },
+                ),
         ],
       ),
     );

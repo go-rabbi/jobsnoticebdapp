@@ -20,6 +20,7 @@ class SinglePostAdapter extends TypeAdapter<SinglePost> {
       title: fields[0] as String,
       content: fields[1] as String,
       img: fields[2] as String,
+      date: fields[4] as String,
       category: fields[3] as int,
     );
   }
@@ -27,7 +28,7 @@ class SinglePostAdapter extends TypeAdapter<SinglePost> {
   @override
   void write(BinaryWriter writer, SinglePost obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class SinglePostAdapter extends TypeAdapter<SinglePost> {
       ..writeByte(2)
       ..write(obj.img)
       ..writeByte(3)
-      ..write(obj.category);
+      ..write(obj.category)
+      ..writeByte(4)
+      ..write(obj.date);
   }
 
   @override

@@ -43,8 +43,8 @@ class _BottomBarState extends State<BottomBar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.blue,
+        selectedItemColor: Color(0xFFE6051F),
+        unselectedItemColor: Colors.green,
         onTap: (int v) {
           setState(() {
             index = v;

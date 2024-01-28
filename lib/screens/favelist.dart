@@ -37,10 +37,12 @@ class _FavListPageState extends State<FavListPage> {
                 context,
                 MaterialPageRoute(
                     builder: (_) => SinglePostPage(
-                        title: post.title,
-                        image: post.img,
-                        content: post.content,
-                        category: post.category)));
+                          title: post.title,
+                          image: post.img,
+                          content: post.content,
+                          category: post.category,
+                          date: post.date,
+                        )));
           },
           onLongPress: () {
             showAdaptiveDialog(

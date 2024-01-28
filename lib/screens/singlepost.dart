@@ -1,14 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jobs/models/favouritepost.dart';
 import 'package:jobs/utis/models.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../models/singlepost.dart';
 
 class SinglePostPage extends StatefulWidget {
-  final String title, image, content;
+  final String title, image, content, date;
   final int category;
 
   const SinglePostPage(
@@ -16,6 +16,7 @@ class SinglePostPage extends StatefulWidget {
       required this.title,
       required this.image,
       required this.content,
+      required this.date,
       required this.category});
 
   @override
@@ -23,7 +24,12 @@ class SinglePostPage extends StatefulWidget {
 }
 
 class _SinglePostPageState extends State<SinglePostPage> {
-  late final String title, image, content;
+  String title = '',
+      image = '',
+      content = '',
+      style = '',
+      fimage = '',
+      date = '';
   late int category;
   late WebViewController controller;
   bool isfav = false;
@@ -33,13 +39,79 @@ class _SinglePostPageState extends State<SinglePostPage> {
     super.initState();
     title = widget.title;
     image = widget.image;
-    content = widget.content;
     category = widget.category;
-    content.replaceAll('<img', '<img style="width=100%;"');
+    date = widget.date;
+    style = '''
+    <style>
+    img{
+    width:100% !important;
+    }
+    *{
+    font-size:45px !important;
+    }
+    td{
+    border:1px solid black;
+    }
+    .wp-block-buttons a{
+    text-decoration:none !important;
+    color:white !important;
+    padding:15px 25px !important;
+    border-radius:8px !important;
+    border:1px solid rgba(0,240,0,0.4) !important;
+    background:rgba(0,240,0,0.4) !important;
+    }
+    </style>
+    ''';
+    fimage = '''
+    <img style="width:100%;" src="$image">
+    ''';
+
+    content = style +
+        fimage +
+        '<div style="padding: 0 20px;">' +
+        '''
+        <div style="display:flex;justify-content:end;margin-top:20px;">Date: ${date}</div>
+        ''' +
+        widget.content +
+        '</div>';
+    content.replaceAll(r'\n', '');
+    content.replaceAll(r'target=\"_blank\"', '');
+    content.replaceAll(r'rel=\"noreferrer', '');
+    content.replaceAll(r'noopener\', '');
+
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadHtmlString(content)
-      ..enableZoom(true);
+      ..enableZoom(true)
+      ..setNavigationDelegate(NavigationDelegate(onUrlChange: (u) async {
+        await controller.goBack();
+        if (u.url != 'about:blank') {
+          showAdaptiveDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                    content: Text('Dow you want to visit ${u.url}?'),
+                    actions: [
+                      TextButton(
+                          onPressed: () async {
+                            if (await controller.canGoBack()) {
+                              await controller.goBack();
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel')),
+                      TextButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            try {
+                              await launchUrl(Uri.parse(u.url!));
+                            } catch (e) {}
+                          },
+                          child: Text('Visit')),
+                    ],
+                  ));
+        }
+      }));
+
     for (int i = 0; i < favourites.length; i++) {
       var post = favourites.getAt(i)!.singlePosts;
       if (post.title == title) {
@@ -81,6 +153,7 @@ class _SinglePostPageState extends State<SinglePostPage> {
                       img: image,
                       content: content,
                       category: category,
+                      date: date,
                     ),
                   ),
                 );
@@ -105,26 +178,23 @@ class _SinglePostPageState extends State<SinglePostPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            CachedNetworkImage(imageUrl: image),
-            InteractiveViewer(
-              maxScale: 4,
-              minScale: 1,
-              clipBehavior: Clip.none,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                height: MediaQuery.of(context).size.height * 2,
-                width: MediaQuery.of(context).size.width,
-                child: WebViewWidget(
-                  controller: controller,
-                ),
-              ),
-            ),
-          ],
+      body: WillPopScope(
+        onWillPop: () async {
+          if (await controller.canGoBack()) {
+            await controller.goBack();
+            return false;
+          }
+          return true;
+        },
+        child: WebViewWidget(
+          controller: controller,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

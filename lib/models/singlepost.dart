@@ -8,6 +8,7 @@ class SinglePost {
       {required this.title,
       required this.content,
       required this.img,
+      required this.date,
       required this.category});
 
   @HiveField(0)
@@ -21,4 +22,7 @@ class SinglePost {
 
   @HiveField(3)
   int category;
+
+  @HiveField(4)
+  String date;
 }

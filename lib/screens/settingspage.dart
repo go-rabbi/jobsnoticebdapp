@@ -87,6 +87,28 @@ class _SettingsPageState extends State<SettingsPage> {
           },
           title: Text('Privacy Policy'),
         ),
+        Divider(),
+        ListTile(
+          leading: Icon(
+            Icons.web,
+            color: Colors.green,
+          ),
+          onTap: () async {
+            try {
+              await launchUrl(Uri.parse('https://jobsnoticebd.com/'));
+            } catch (e) {
+              await Fluttertoast.showToast(
+                  msg: "Sorry! Cannot Launch This Url",
+                  toastLength: Toast.LENGTH_LONG,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            }
+          },
+          title: Text('Visit Website'),
+        ),
       ],
     );
   }

@@ -27,24 +27,31 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getPosts() async {
+    setState(() {
+      data = [];
+    });
     for (int i = 1; i <= 10; i++) {
       var res = await http.get(Uri.parse(
           'https://jobsnoticebd.com/wp-json/wp/v2/search?search=${controller.text}&page=${i}'));
       var cats = jsonDecode(res.body);
       print('runtime' + cats.toString());
       if (cats.runtimeType == List<dynamic>) {
-        for (int j = 0; j < cats.length; j++) {
-          var res1 = await http.get(Uri.parse(
-              'https://jobsnoticebd.com/wp-json/wp/v2/posts/${cats[j]['id']}'));
-          var post = jsonDecode(res1.body);
-          setState(() {
-            data.add({
-              'id': post['id'],
-              'title': post['title']['rendered'],
-              'image': post['jetpack_featured_media_url'],
+        if (cats.length == 0)
+          break;
+        else {
+          for (int j = 0; j < cats.length; j++) {
+            var res1 = await http.get(Uri.parse(
+                'https://jobsnoticebd.com/wp-json/wp/v2/posts/${cats[j]['id']}'));
+            var post = jsonDecode(res1.body);
+            setState(() {
+              data.add({
+                'id': post['id'],
+                'title': post['title']['rendered'],
+                'image': post['jetpack_featured_media_url'],
+              });
+              print('data' + data.toString());
             });
-            print('data' + data.toString());
-          });
+          }
         }
       } else {
         break;
@@ -80,6 +87,9 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           TextFormField(
             onEditingComplete: getPosts,
+            onChanged: (v) {
+              getPosts();
+            },
             focusNode: _focusNode,
             controller: controller,
             decoration: InputDecoration(

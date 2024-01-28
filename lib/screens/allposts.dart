@@ -4,9 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:jobs/screens/singlepost.dart';
 
+import '../utis/methods.dart';
+
 class AllPosts extends StatefulWidget {
-  final category;
-  const AllPosts({super.key, required this.category});
+  final categoryId, categoryName;
+  const AllPosts(
+      {super.key, required this.categoryId, required this.categoryName});
 
   @override
   State<AllPosts> createState() => _AllPostsState();
@@ -21,8 +24,8 @@ class _AllPostsState extends State<AllPosts> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    catid = widget.category['id'];
-    catname = widget.category['name'];
+    catid = widget.categoryId;
+    catname = widget.categoryName;
     getPosts();
   }
 
@@ -67,12 +70,12 @@ class _AllPostsState extends State<AllPosts> {
                   child: Center(
                     child: Text(
                       'No Posts To Display',
-                      style: TextStyle(fontSize: 20, color: Colors.green),
+                      style: TextStyle(fontSize: 20, color: Colors.red),
                     ),
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: GridView.builder(
                       itemCount: data.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -86,6 +89,7 @@ class _AllPostsState extends State<AllPosts> {
                                 MaterialPageRoute(
                                     builder: (_) => SinglePostPage(
                                           title: post['title']['rendered'],
+                                          date: getDate(post['date']),
                                           image: post[
                                               'jetpack_featured_media_url'],
                                           content: post['content']['rendered'],
@@ -98,6 +102,8 @@ class _AllPostsState extends State<AllPosts> {
                                 children: [
                                   Flexible(
                                     child: CachedNetworkImage(
+                                      width: double.infinity,
+                                      fit: BoxFit.fill,
                                       fadeInDuration: Duration.zero,
                                       fadeOutDuration: Duration.zero,
                                       imageUrl:
@@ -110,6 +116,12 @@ class _AllPostsState extends State<AllPosts> {
                                       post['title']['rendered'],
                                       textAlign: TextAlign.center,
                                     ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(getDate(post['date'])),
+                                    ],
                                   ),
                                 ],
                               ),
