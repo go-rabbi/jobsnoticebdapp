@@ -83,9 +83,11 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      child: Image.asset('img/${allCategories[i]}.jpg'),
+                    child: Card(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        child: Image.asset('img/${allCategories[i]}.jpg'),
+                      ),
                     ),
                   );
                 },

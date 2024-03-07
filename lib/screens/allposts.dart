@@ -97,6 +97,7 @@ class _AllPostsState extends State<AllPosts> {
                                         )));
                           },
                           child: Card(
+                            color: Color(0xfffefefe),
                             child: Center(
                               child: Column(
                                 children: [
@@ -120,7 +121,10 @@ class _AllPostsState extends State<AllPosts> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Text(getDate(post['date'])),
+                                      Text(
+                                        'Publish Date: ${getDate(post['date'])}',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
                                     ],
                                   ),
                                 ],
